@@ -12,11 +12,11 @@ export default function CarComponent() {
 
   return (
     <>
-      <h1>Digital Garage</h1>
+      <h1>Recipe Book</h1>
       <section className="car-input">
         <div>
           <div className="add-car">
-            Add a car:
+            Add a recipe:
             <input
               defaultValue={newCarMake}
               onChange={(event) => setNewCarMake(event.target.value)}
