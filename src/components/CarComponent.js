@@ -34,19 +34,22 @@ export default function RecipeBookComponent() {
               placeholder="Instructions..."
             />
             <button
-              onClick={() =>
-                dispatch({
-                  type: ADD_RECIPE,
-                  payload: {
-                    name: newRecipeName,
-                    ingredients: newRecipeIngredients.split(',').map(ingredient => ingredient.trim()),
-                    instructions: newRecipeInstructions,
-                  },
-                })
-              }
-            >
-              Add Recipe
-            </button>
+  onClick={() => {
+    dispatch({
+      type: ADD_RECIPE,
+      payload: {
+        name: newRecipeName,
+        ingredients: newRecipeIngredients.split(',').map(ingredient => ingredient.trim()),
+        instructions: newRecipeInstructions,
+      },
+    });
+    setNewRecipeName('');
+    setNewRecipeIngredients('');
+    setNewRecipeInstructions('');
+  }}
+>
+  Add Recipe
+</button>
           </div>
         </div>
       </section>
