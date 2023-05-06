@@ -1,87 +1,70 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { START_CAR, STOP_CAR, ADD_CAR } from '../utils/actions';
+import { ADD_RECIPE } from '../utils/actions';
 
-export default function CarComponent() {
+export default function RecipeBookComponent() {
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
 
-  const [newCarMake, setNewCarMake] = useState('');
-  const [newCarModel, setNewCarModel] = useState('');
-  const [newCarYear, setNewCarYear] = useState('');
+  const [newRecipeName, setNewRecipeName] = useState('');
+  const [newRecipeIngredients, setNewRecipeIngredients] = useState('');
+  const [newRecipeInstructions, setNewRecipeInstructions] = useState('');
 
   return (
     <>
       <h1>Recipe Book</h1>
-      <section className="car-input">
+      <section className="recipe-input">
         <div>
-          <div className="add-car">
+          <div className="add-recipe">
             Add a recipe:
             <input
-              defaultValue={newCarMake}
-              onChange={(event) => setNewCarMake(event.target.value)}
-              placeholder="New car make..."
+              value={newRecipeName}
+              onChange={(event) => setNewRecipeName(event.target.value)}
+              placeholder="Recipe name..."
               type="text"
             />
-            <input
-              defaultValue={newCarModel}
-              onChange={(event) => setNewCarModel(event.target.value)}
-              placeholder="New car model..."
-              type="text"
+            <textarea
+              value={newRecipeIngredients}
+              onChange={(event) => setNewRecipeIngredients(event.target.value)}
+              placeholder="Ingredients (separated by commas)..."
             />
-            <input
-              defaultValue={newCarYear}
-              onChange={(event) => setNewCarYear(event.target.value)}
-              placeholder="New car year..."
-              type="text"
+            <textarea
+              value={newRecipeInstructions}
+              onChange={(event) => setNewRecipeInstructions(event.target.value)}
+              placeholder="Instructions..."
             />
             <button
               onClick={() =>
                 dispatch({
-                  type: ADD_CAR,
+                  type: ADD_RECIPE,
                   payload: {
-                    make: newCarMake,
-                    model: newCarModel,
-                    year: newCarYear,
+                    name: newRecipeName,
+                    ingredients: newRecipeIngredients.split(',').map(ingredient => ingredient.trim()),
+                    instructions: newRecipeInstructions,
                   },
                 })
               }
             >
-              Add Car
+              Add Recipe
             </button>
           </div>
         </div>
       </section>
-      <section className="car-list">
+      <section className="recipe-list">
         {console.log(state)}
-        {state.cars.map((car) => (
-          <div key={car.id} id={car.id} className="card mb-3">
+        {state.recipes.map((recipe) => (
+          <div key={recipe.id} id={recipe.id} className="card mb-3">
             <h4 className="card-header bg-primary text-light p-2 m-0">
-              {car.model} <br />
-              <span style={{ fontSize: '1rem' }}>
-                This car was manufactured in {car.year}
-              </span>
+              {recipe.name}
             </h4>
             <div className="card-body bg-light p-2">
-              <p>{car.make}</p>
+              <p>Ingredients: {recipe.ingredients.join(', ')}</p>
+              <p>Instructions: {recipe.instructions}</p>
               <code>
-                Car ID:
-                {car.id}
+                Recipe ID:
+                {recipe.id}
               </code>
             </div>
-            <span style={{ fontSize: '1rem' }}>
-              {car.isRunning ? 'Car is running 🏎️' : 'Car is off 💤'}
-              <button
-                id="turnOn"
-                onClick={
-                  !car.isRunning
-                    ? () => dispatch({ type: START_CAR, payload: car.id })
-                    : () => dispatch({ type: STOP_CAR, payload: car.id })
-                }
-              >
-                Toggle Engine
-              </button>
-            </span>
           </div>
         ))}
       </section>
