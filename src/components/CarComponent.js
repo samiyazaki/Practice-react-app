@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ADD_RECIPE } from '../utils/actions';
+import React, { useState, useEffect } from 'react';
 
 export default function RecipeBookComponent() {
-  const dispatch = useDispatch();
-  const state = useSelector((state) => state);
-
   const [newRecipeName, setNewRecipeName] = useState('');
   const [newRecipeIngredients, setNewRecipeIngredients] = useState('');
   const [newRecipeInstructions, setNewRecipeInstructions] = useState('');
+  const [recipes, setRecipes] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/recipes')
+      .then((response) => response.json())
+      .then((data) => setRecipes(data));
+  }, []);
 
   return (
     <>
@@ -23,39 +25,49 @@ export default function RecipeBookComponent() {
               placeholder="Recipe name..."
               type="text"
             />
-            <textarea
+            <input
               value={newRecipeIngredients}
               onChange={(event) => setNewRecipeIngredients(event.target.value)}
-              placeholder="Ingredients (separated by commas)..."
+              placeholder="Ingredients (comma-separated)..."
+              type="text"
             />
-            <textarea
+            <input
               value={newRecipeInstructions}
               onChange={(event) => setNewRecipeInstructions(event.target.value)}
               placeholder="Instructions..."
+              type="text"
             />
             <button
-  onClick={() => {
-    dispatch({
-      type: ADD_RECIPE,
-      payload: {
-        name: newRecipeName,
-        ingredients: newRecipeIngredients.split(',').map(ingredient => ingredient.trim()),
-        instructions: newRecipeInstructions,
-      },
-    });
-    setNewRecipeName('');
-    setNewRecipeIngredients('');
-    setNewRecipeInstructions('');
-  }}
->
-  Add Recipe
-</button>
+              onClick={() => {
+                const newRecipe = {
+                  name: newRecipeName,
+                  ingredients: newRecipeIngredients.split(',').map((ingredient) => ingredient.trim()),
+                  instructions: newRecipeInstructions,
+                };
+
+                fetch('/recipes', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(newRecipe),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    setRecipes([...recipes, data]);
+                    setNewRecipeName('');
+                    setNewRecipeIngredients('');
+                    setNewRecipeInstructions('');
+                  });
+              }}
+            >
+              Add Recipe
+            </button>
           </div>
         </div>
       </section>
       <section className="recipe-list">
-        {console.log(state)}
-        {state.recipes.map((recipe) => (
+        {recipes.map((recipe) => (
           <div key={recipe.id} id={recipe.id} className="card mb-3">
             <h4 className="card-header bg-primary text-light p-2 m-0">
               {recipe.name}
@@ -63,10 +75,6 @@ export default function RecipeBookComponent() {
             <div className="card-body bg-light p-2">
               <p>Ingredients: {recipe.ingredients.join(', ')}</p>
               <p>Instructions: {recipe.instructions}</p>
-              <code>
-                Recipe ID:
-                {recipe.id}
-              </code>
             </div>
           </div>
         ))}
