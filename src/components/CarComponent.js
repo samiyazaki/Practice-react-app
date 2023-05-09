@@ -45,7 +45,7 @@ export default function RecipeBookComponent() {
                   instructions: newRecipeInstructions,
                 };
 
-                fetch('/recipes', {
+                fetch('http://localhost:3001/recipes', {  // <<<<< Here is the change
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
